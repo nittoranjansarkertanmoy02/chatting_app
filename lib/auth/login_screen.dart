@@ -1,9 +1,19 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+import 'dart:io';
+import 'dart:math';
 
+import 'package:chatting_app/auth/forget_password.dart';
+import 'package:chatting_app/auth/signup_screen.dart';
+import 'package:chatting_app/helpers/dialogs.dart';
+import 'package:chatting_app/helpers/indicator.dart';
+import 'package:chatting_app/screens/home_screen.dart';
 import 'package:chatting_app/widgets/click_button.dart';
 import 'package:chatting_app/widgets/textform_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,16 +23,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool animation = false;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(seconds: 4));
-    setState(() {
-      animation = true;
-    });
-  }
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,23 +41,56 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               height: 25,
             ),
-            TextFormButton(
-              textt: 'Email',
-              iconn: Icon(CupertinoIcons.mail),
-            ),
+            Form(
+                child: Column(
+              children: [
+                TextFormButton(
+                  controller: emailController,
+                  textt: 'Email',
+                  iconn: Icon(CupertinoIcons.mail),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormButton(
+                  controller: passwordController,
+                  iconn: Icon(CupertinoIcons.lock_open),
+                  textt: 'Password',
+                ),
+                10.heightBox,
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgetPassword(),
+                          ));
+                    },
+                    child: Text(
+                      'Forgot your password?',
+                      style: TextStyle(
+                        fontSize: 12,
+                        letterSpacing: 1.6,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )),
             SizedBox(
-              height: 15,
-            ),
-            TextFormButton(
-              iconn: Icon(CupertinoIcons.lock_open),
-              textt: 'Password',
-            ),
-            SizedBox(
-              height: 15,
+              height: 25,
             ),
             ClickButton(
               textt: 'Login',
-              onTapp: () {},
+              onTapp: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomeScreen(),
+                    ));
+              },
             ),
             SizedBox(
               height: 15,
@@ -70,35 +105,15 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               height: 15,
             ),
-            Container(
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.cyan,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Signin with Google',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.8,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Image.asset(
-                      'images/google.png',
-                      height: 25,
-                    ),
-                  )
-                ],
-              ),
+            ClickButton(
+              textt: 'Sign Up',
+              onTapp: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SignUpScreen(),
+                    ));
+              },
             )
           ],
         ),
