@@ -1,7 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 import 'package:flutter/material.dart';
 
+import 'package:chatting_app/models/userModel.dart';
+
 class UserChatCard extends StatefulWidget {
-  const UserChatCard({super.key});
+  final userModel userMODEL;
+  const UserChatCard({
+    Key? key,
+    required this.userMODEL,
+  }) : super(key: key);
 
   @override
   State<UserChatCard> createState() => _UserChatCardState();
@@ -18,10 +25,10 @@ class _UserChatCardState extends State<UserChatCard> {
           backgroundColor: Colors.grey[400],
           child: const Icon(Icons.person),
         ),
-        title: const Text('User'),
-        subtitle: const Text(
-          'Hello,Check Message',
-          style: TextStyle(
+        title: Text(widget.userMODEL.name.toString()),
+        subtitle: Text(
+          widget.userMODEL.about.toString(),
+          style: const TextStyle(
             color: Colors.black54,
           ),
         ),
