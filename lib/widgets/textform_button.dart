@@ -6,12 +6,14 @@ class TextFormButton extends StatefulWidget {
   final Icon iconn;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final Function(String)? onChanged;
   const TextFormButton({
     Key? key,
     required this.textt,
     required this.iconn,
     required this.controller,
     this.validator,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class _TextFormButtonState extends State<TextFormButton> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: widget.onChanged,
       controller: widget.controller,
       decoration: InputDecoration(
         prefixIcon: widget.iconn,
