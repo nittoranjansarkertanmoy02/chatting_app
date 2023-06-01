@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_returning_null_for_void
+// ignore_for_file: avoid_returning_null_for_void, use_build_context_synchronously
 import 'dart:io';
 import 'package:chatting_app/constants/firebases_constants.dart';
 import 'package:chatting_app/helpers/dialogs.dart';
@@ -26,17 +26,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final confirmPassword = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   _withGoogle() {
-    _signInWithGoogle().then((user) {
+    _signInWithGoogle().then((user) async {
       DialogsIndicator.showIndicator(
         context,
       );
       if (user != null) {
         Navigator.pop(context);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ));
+        if (await FirebaseConstants.userExits()) {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ));
+        } else {
+          await FirebaseConstants.createUser().then((value) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),
+                ));
+          });
+        }
       }
     });
   }

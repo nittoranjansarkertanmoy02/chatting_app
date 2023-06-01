@@ -15,30 +15,30 @@ class UserChatCard extends StatefulWidget {
 }
 
 class _UserChatCardState extends State<UserChatCard> {
+  userModel user = userModel();
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 10.0,
       margin: const EdgeInsets.all(5.0),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey[400],
-          child: const Icon(Icons.person),
-        ),
-        title: Text(widget.userMODEL.name.toString()),
-        subtitle: Text(
-          widget.userMODEL.about.toString(),
-          style: const TextStyle(
-            color: Colors.black54,
+          leading: CircleAvatar(
+            backgroundColor: Colors.grey[400],
+            child: const Icon(Icons.person),
           ),
-        ),
-        trailing: const Text(
-          '12:00AM',
-          style: TextStyle(
-            color: Colors.black54,
+          title: Text(widget.userMODEL.name.toString()),
+          subtitle: Text(
+            widget.userMODEL.about.toString(),
+            style: const TextStyle(
+              color: Colors.black54,
+            ),
           ),
-        ),
-      ),
+          trailing: Text(
+            user.lastActive.toString(),
+            style: const TextStyle(
+              color: Colors.black45,
+            ),
+          )),
     );
   }
 }
