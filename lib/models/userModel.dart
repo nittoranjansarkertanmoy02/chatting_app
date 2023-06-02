@@ -1,6 +1,6 @@
 class userModel {
   String? about;
-  String? name;
+  late String name;
   bool? isOnline;
   String? id;
   String? email;
@@ -10,7 +10,7 @@ class userModel {
 
   userModel({
     this.about,
-    this.name,
+    required this.name,
     this.isOnline,
     this.id,
     this.email,

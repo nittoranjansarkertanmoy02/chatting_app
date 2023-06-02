@@ -8,10 +8,23 @@ class FirebaseConstants {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
   static User get user => auth.currentUser!;
+  static late userModel selfAccountInfo;
 
   //for checking user exit or not
   static Future<bool> userExits() async {
     return (await fireStore.collection('users').doc(user.uid).get()).exists;
+  }
+
+  //for showing self Account
+  static Future<void> selfAccountInformation() async {
+    await fireStore.collection('users').doc(user.uid).get().then((value) async {
+      if (value.exists) {
+        print('Details: ${value.data()}');
+        selfAccountInfo = userModel.fromJson(value.data()!);
+      } else {
+        await createUser().then((value) => selfAccountInformation());
+      }
+    });
   }
 
   //for createing new user
@@ -30,5 +43,22 @@ class FirebaseConstants {
         .collection('users')
         .doc(user.uid)
         .set(chatUser.toJson()));
+  }
+
+  //for getting all users from firebase database
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+    return fireStore
+        .collection('users')
+        .where('id', isNotEqualTo: user.uid)
+        .snapshots();
+  }
+
+  //for updating Informations
+  static Future<void> updateInformations() async {
+    await fireStore.collection('users').doc(user.uid).update({
+      'name': selfAccountInfo.name,
+      'about': selfAccountInfo.about,
+    });
   }
 }

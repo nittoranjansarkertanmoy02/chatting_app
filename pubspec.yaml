@@ -43,6 +43,7 @@ dependencies:
   cloud_firestore: ^4.7.1
   fluttertoast: ^8.2.2
   cached_network_image: ^3.2.3
+  firebase_database: ^10.2.2
 
 dev_dependencies:
   flutter_test:
