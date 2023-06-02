@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:chatting_app/auth/login_screen.dart';
 import 'package:chatting_app/constants/firebases_constants.dart';
 import 'package:chatting_app/models/userModel.dart';
 import 'package:chatting_app/screens/profile_screen.dart';
@@ -10,7 +9,6 @@ import 'package:chatting_app/widgets/user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,45 +30,19 @@ class _HomeScreenState extends State<HomeScreen> {
       statusBarColor: Colors.transparent,
     ));
     super.initState();
-  }
 
-//SignOut-----------------------
-  _signOUT() async {
-    await FirebaseConstants.auth.signOut();
-    await GoogleSignIn().signOut().then((value) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ));
-    });
+    FirebaseConstants.selfAccountInformation();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        backgroundColor: Colors.white,
-        child: Column(
-          children: [
-            const DrawerHeader(
-              child: Icon(Icons.person),
-            ),
-            DrawerOpyions(
-              texxt: 'Profile',
-              iconn: const Icon(Icons.person),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ));
-              },
-            )
-          ],
-        ),
-      ),
+      // drawer: ProfileDrawer(
+      //     imageUrl: FirebaseConstants.selfAccountInfo.image.toString(),
+      //     name: FirebaseConstants.selfAccountInfo.name.toString(),
+      //     email: FirebaseConstants.selfAccountInfo.email.toString()),
       appBar: AppBar(
+        leading: const Icon(Icons.menu),
         elevation: 0.0,
         title: const Text(
           'Chatting App',
@@ -79,21 +51,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          PopupMenuButton(
-              child: const Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                    PopupMenuItem(
-                        onTap: () {
-                          _signOUT();
-                        },
-                        child: Row(
-                          children: [
-                            const Icon(Icons.person),
-                            10.widthBox,
-                            const Text('Sign Out'),
-                          ],
-                        ))
-                  ])
+          IconButton(
+            onPressed: () {
+              if (list.isNotEmpty) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(
+                      user: FirebaseConstants.selfAccountInfo,
+                    ),
+                  ),
+                );
+              } else {
+                // Handle the case when the list is empty or not loaded yet
+              }
+            },
+            icon: const Icon(CupertinoIcons.person_alt_circle),
+          ),
+
+          // PopupMenuButton(
+          //     child: const Icon(Icons.more_vert),
+          //     itemBuilder: (context) => [
+          //           PopupMenuItem(
+          //               onTap: () {
+          //                 _signOUT();
+          //               },
+          //               child: Row(
+          //                 children: [
+          //                   const Icon(Icons.person),
+          //                   10.widthBox,
+          //                   const Text('Sign Out'),
+          //                 ],
+          //               ))
+          //         ])
         ],
       ),
       body: Padding(
@@ -112,8 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
             20.heightBox,
             Expanded(
               child: StreamBuilder(
-                stream:
-                    FirebaseConstants.fireStore.collection('users').snapshots(),
+                stream: FirebaseConstants.getAllUsers(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -136,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: list.length,
                           itemBuilder: (context, index) {
                             return UserChatCard(
-                              userMODEL: list[index],
+                              user: list[index],
                             );
                           },
                         );
@@ -161,6 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {},
         child: const Icon(Icons.message_outlined),
       ),
+      // bottomNavigationBar: BottomNavigationBar(items: const [
+      //   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+      //   BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settiings'),
+      //   BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Person'),
+      // ]),
     );
   }
 }
