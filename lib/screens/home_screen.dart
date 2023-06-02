@@ -20,8 +20,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final searchController = TextEditingController();
-
   List<userModel> list = [];
+  final List<userModel> _searchList = [];
+  bool _isSearching = false;
+
   @override
   void initState() {
     //full screen----------------------
@@ -88,62 +90,78 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            10.heightBox,
-            TextFormButton(
-              textt: 'Search',
-              iconn: const Icon(CupertinoIcons.search),
-              controller: searchController,
-              onChanged: (String value) {
-                setState(() {});
-              },
-            ),
-            20.heightBox,
-            Expanded(
-              child: StreamBuilder(
-                stream: FirebaseConstants.getAllUsers(),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.none:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    default:
-                      final data = snapshot.data?.docs;
-                      list = data!
-                          .map((e) => userModel.fromJson(e.data()))
-                          .toList();
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Column(
+            children: [
+              10.heightBox,
+              TextFormButton(
+                textt: 'Search',
+                iconn: const Icon(CupertinoIcons.search),
+                controller: searchController,
+                onChanged: (val) {
+                  _searchList.clear();
+                  for (var i in list) {
+                    if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                        i.email!.toLowerCase().contains(val.toLowerCase())) {
+                      _searchList.add(i);
+                    }
 
-                      if (snapshot.hasData) {
-                        print('Data${json.encode(list)}');
-                        return ListView.builder(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.height * 0.01),
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: list.length,
-                          itemBuilder: (context, index) {
-                            return UserChatCard(
-                              user: list[index],
-                            );
-                          },
-                        );
-                      }
+                    setState(() {
+                      _searchList;
+                    });
                   }
-                  return const Center(
-                    child: Text(
-                      'No Connection Found',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                  );
                 },
               ),
-            ),
-          ],
+              20.heightBox,
+              Expanded(
+                child: StreamBuilder(
+                  stream: FirebaseConstants.getAllUsers(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                      case ConnectionState.none:
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      default:
+                        final data = snapshot.data?.docs;
+                        list = data!
+                            .map((e) => userModel.fromJson(e.data()))
+                            .toList();
+
+                        if (snapshot.hasData) {
+                          print('Data${json.encode(list)}');
+                          return ListView.builder(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * 0.01),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount:
+                                _isSearching ? _searchList.length : list.length,
+                            itemBuilder: (context, index) {
+                              return UserChatCard(
+                                user: _isSearching
+                                    ? _searchList[index]
+                                    : list[index],
+                              );
+                            },
+                          );
+                        }
+                    }
+                    return const Center(
+                      child: Text(
+                        'No Connection Found',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

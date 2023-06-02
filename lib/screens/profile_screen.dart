@@ -131,7 +131,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: MediaQuery.of(context).size.height * 0.05,
                 ),
                 TextFormField(
-                  onSaved: (newValue) => FirebaseConstants.selfAccountInfo.name,
+                  onSaved: (newValue) =>
+                      FirebaseConstants.selfAccountInfo.name = newValue ?? '',
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Required';
@@ -150,8 +151,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 15,
                 ),
                 TextFormField(
-                  onSaved: (newValue) =>
-                      FirebaseConstants.selfAccountInfo.about,
+                  onSaved: (newValue) {
+                    FirebaseConstants.selfAccountInfo.about = newValue ?? '';
+                  },
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Required';

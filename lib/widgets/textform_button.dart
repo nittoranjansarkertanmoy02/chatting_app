@@ -7,6 +7,7 @@ class TextFormButton extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final Function(String)? onChanged;
+  final Function(String?)? onSaved;
   const TextFormButton({
     Key? key,
     required this.textt,
@@ -14,6 +15,7 @@ class TextFormButton extends StatefulWidget {
     required this.controller,
     this.validator,
     this.onChanged,
+    this.onSaved,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class _TextFormButtonState extends State<TextFormButton> {
         ),
         hintText: widget.textt,
       ),
+      onSaved: widget.onSaved,
     );
   }
 }
