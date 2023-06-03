@@ -29,150 +29,186 @@ class _HomeScreenState extends State<HomeScreen> {
     //full screen----------------------
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
+        systemNavigationBarColor: Colors.transparent));
     super.initState();
 
     FirebaseConstants.selfAccountInformation();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // drawer: ProfileDrawer(
-      //     imageUrl: FirebaseConstants.selfAccountInfo.image.toString(),
-      //     name: FirebaseConstants.selfAccountInfo.name.toString(),
-      //     email: FirebaseConstants.selfAccountInfo.email.toString()),
-      appBar: AppBar(
-        leading: const Icon(Icons.menu),
-        elevation: 0.0,
-        title: const Text(
-          'Chatting App',
-          style: TextStyle(
-            letterSpacing: 1.8,
-          ),
-        ),
+  //if click on Android Back button
+  Future<bool> _onBackPressed(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App'),
+        content: const Text('Are you sure you want to exit?'),
         actions: [
-          IconButton(
-            onPressed: () {
-              if (list.isNotEmpty) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileScreen(
-                      user: FirebaseConstants.selfAccountInfo,
-                    ),
-                  ),
-                );
-              } else {
-                // Handle the case when the list is empty or not loaded yet
-              }
-            },
-            icon: const Icon(CupertinoIcons.person_alt_circle),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
           ),
-
-          // PopupMenuButton(
-          //     child: const Icon(Icons.more_vert),
-          //     itemBuilder: (context) => [
-          //           PopupMenuItem(
-          //               onTap: () {
-          //                 _signOUT();
-          //               },
-          //               child: Row(
-          //                 children: [
-          //                   const Icon(Icons.person),
-          //                   10.widthBox,
-          //                   const Text('Sign Out'),
-          //                 ],
-          //               ))
-          //         ])
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+              SystemNavigator.pop();
+            },
+            child: const Text('Yes'),
+          ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Column(
-            children: [
-              10.heightBox,
-              TextFormButton(
-                textt: 'Search',
-                iconn: const Icon(CupertinoIcons.search),
-                controller: searchController,
-                onChanged: (val) {
-                  _searchList.clear();
-                  for (var i in list) {
-                    if (i.name.toLowerCase().contains(val.toLowerCase()) ||
-                        i.email!.toLowerCase().contains(val.toLowerCase())) {
-                      _searchList.add(i);
-                    }
+    ).then((value) => value ?? false);
+  }
 
-                    setState(() {
-                      _searchList;
-                    });
-                  }
-                },
-              ),
-              20.heightBox,
-              Expanded(
-                child: StreamBuilder(
-                  stream: FirebaseConstants.getAllUsers(),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                      case ConnectionState.none:
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      default:
-                        final data = snapshot.data?.docs;
-                        list = data!
-                            .map((e) => userModel.fromJson(e.data()))
-                            .toList();
-
-                        if (snapshot.hasData) {
-                          print('Data${json.encode(list)}');
-                          return ListView.builder(
-                            padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.height * 0.01),
-                            physics: const BouncingScrollPhysics(),
-                            itemCount:
-                                _isSearching ? _searchList.length : list.length,
-                            itemBuilder: (context, index) {
-                              return UserChatCard(
-                                user: _isSearching
-                                    ? _searchList[index]
-                                    : list[index],
-                              );
-                            },
-                          );
-                        }
-                    }
-                    return const Center(
-                      child: Text(
-                        'No Connection Found',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                        ),
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => _onBackPressed(context),
+      child: Scaffold(
+        // drawer: ProfileDrawer(
+        //     imageUrl: FirebaseConstants.selfAccountInfo.image.toString(),
+        //     name: FirebaseConstants.selfAccountInfo.name.toString(),
+        //     email: FirebaseConstants.selfAccountInfo.email.toString()),
+        appBar: AppBar(
+          leading: const Icon(Icons.menu),
+          elevation: 0.0,
+          title: _isSearching
+              ? const Text(
+                  'Search Name',
+                  style: TextStyle(
+                    letterSpacing: 1.8,
+                  ),
+                )
+              : const Text(
+                  'Chatting App',
+                  style: TextStyle(
+                    letterSpacing: 1.8,
+                  ),
+                ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                if (list.isNotEmpty) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        user: FirebaseConstants.selfAccountInfo,
                       ),
-                    );
+                    ),
+                  );
+                } else {
+                  // Handle the case when the list is empty or not loaded yet
+                }
+              },
+              icon: const Icon(CupertinoIcons.person_alt_circle),
+            ),
+
+            // PopupMenuButton(
+            //     child: const Icon(Icons.more_vert),
+            //     itemBuilder: (context) => [
+            //           PopupMenuItem(
+            //               onTap: () {
+            //                 _signOUT();
+            //               },
+            //               child: Row(
+            //                 children: [
+            //                   const Icon(Icons.person),
+            //                   10.widthBox,
+            //                   const Text('Sign Out'),
+            //                 ],
+            //               ))
+            //         ])
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Column(
+              children: [
+                10.heightBox,
+                TextFormButton(
+                  textt: 'Search',
+                  iconn: const Icon(CupertinoIcons.search),
+                  controller: searchController,
+                  onChanged: (String val) {
+                    _isSearching = val.isNotEmpty;
+                    _searchList.clear();
+                    for (var i in list) {
+                      if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                          i.email!.toLowerCase().contains(val.toLowerCase())) {
+                        _searchList.add(i);
+                      }
+
+                      setState(() {
+                        _searchList;
+                      });
+                    }
                   },
                 ),
-              ),
-            ],
+                20.heightBox,
+                Expanded(
+                  child: StreamBuilder(
+                    stream: FirebaseConstants.getAllUsers(),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.none:
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        default:
+                          final data = snapshot.data?.docs;
+                          list = data!
+                              .map((e) => userModel.fromJson(e.data()))
+                              .toList();
+
+                          if (snapshot.hasData) {
+                            print('Data${json.encode(list)}');
+                            return ListView.builder(
+                              padding: EdgeInsets.only(
+                                  top: MediaQuery.of(context).size.height *
+                                      0.01),
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _isSearching
+                                  ? _searchList.length
+                                  : list.length,
+                              itemBuilder: (context, index) {
+                                return UserChatCard(
+                                  user: _isSearching
+                                      ? _searchList[index]
+                                      : list[index],
+                                );
+                              },
+                            );
+                          }
+                      }
+                      return const Center(
+                        child: Text(
+                          'No Connection Found',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(Icons.message_outlined),
+        ),
+        // bottomNavigationBar: BottomNavigationBar(items: const [
+        //   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        //   BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settiings'),
+        //   BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Person'),
+        // ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.message_outlined),
-      ),
-      // bottomNavigationBar: BottomNavigationBar(items: const [
-      //   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-      //   BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settiings'),
-      //   BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Person'),
-      // ]),
     );
   }
 }

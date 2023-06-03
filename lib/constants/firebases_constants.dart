@@ -8,7 +8,9 @@ class FirebaseConstants {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
   static User get user => auth.currentUser!;
-  static late userModel selfAccountInfo;
+  static late  userModel selfAccountInfo;
+
+  //Firebase Storage 
 
   //for checking user exit or not
   static Future<bool> userExits() async {
