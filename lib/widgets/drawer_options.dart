@@ -27,7 +27,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     super.initState();
     FirebaseConstants.selfAccountInformation().then((value) {
       setState(() {
-        selfAccountInfo = FirebaseConstants.selfAccountInfo;
+        selfAccountInfo = FirebaseConstants.selfAccountInfo!;
       });
     });
   }

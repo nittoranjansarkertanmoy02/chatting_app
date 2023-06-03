@@ -38,12 +38,14 @@ dependencies:
   velocity_x: ^4.0.0
   firebase_auth: ^4.6.1
   firebase_core: ^2.13.0
-  firebase_storage: ^11.2.1
+  firebase_storage: ^11.2.2
   google_sign_in: ^6.1.2
   cloud_firestore: ^4.7.1
   fluttertoast: ^8.2.2
   cached_network_image: ^3.2.3
   firebase_database: ^10.2.2
+  image_picker: ^0.8.7+5
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
